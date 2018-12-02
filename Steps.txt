@@ -15,7 +15,9 @@ npm init -y
 npm install html-webpack-plugin copy-webpack-plugin typescript webpack --save-dev
 npm install webpack-cli
 npm install webpack-dev-server --save-dev
-
+#npm install raw-loader --save-dev
+npm install add html-loader@0.5.5 --save-dev
+npm i @types/node
 
 webpack.config.js
 src/index.html
@@ -26,6 +28,6 @@ Angular.
 npm install @angular/common @angular/compiler @angular/core @angular/platform-browser @angular/platform-browser-dynamic rxjs zone.js  --save
 npm install @ngtools/webpack @angular/compiler-cli script-ext-html-webpack-plugin --save-dev
 
-npm install typescript@">=3.1.1 <3.2.0" //>=3.1.1 and <3.2.0
+npm install typescript@">=3.1.1 <3.2.0"
 
 

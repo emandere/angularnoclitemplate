@@ -1,15 +1,20 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ScriptExtPlugin = require('script-ext-html-webpack-plugin');
-const { AngularCompilerPlugin } = require('@ngtools/webpack');
+const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
+const path = require('path');
+const webpack = require("webpack");
 
 
 module.exports = function () {
     return {
-        entry: './src/main.ts',
+        entry: {
+            polyfills: "./src/polyfills.ts",
+            main: "./src/app.ts"
+        },
         output: {
-            path: __dirname + '/dist',
-            filename: 'app.js'
+            path: path.resolve(__dirname, 'dist'),
+            filename: "[name].js"
         },
         resolve: {
             extensions: ['.ts', '.js']
@@ -19,28 +24,36 @@ module.exports = function () {
 
         module: {
             rules: [
-                {test: /\.ts$/, loader: '@ngtools/webpack'}
+                {
+                    test: /\.ts$/,
+                    loader: "awesome-typescript-loader"
+                },
+                {
+                    test: /\.ts$/,
+                    enforce: "pre",
+                    loader: 'tslint-loader'
+                },
+                { test: /\.html$/, loader: 'html-loader' },
+                { test: /\.css$/, loader: 'raw-loader' }
             ]
         },
         plugins: [
-            new CopyWebpackPlugin([
-                { from: 'src/assets', to: 'assets'}
-            ]),
             new HtmlWebpackPlugin({
-                template: __dirname + '/src/index.html',
-                output: __dirname + '/dist',
-                inject: 'head'
+                template: "src/index.html",
+                inject: "body"
             }),
-
-            new ScriptExtPlugin({
-                defaultAttribute: 'defer'
-            }),
-     new AngularCompilerPlugin({
-               tsConfigPath: './tsconfig.json',
-               entryModule: './src/app/app.module#AppModule',
-               sourceMap: true
+    
+            new webpack.ContextReplacementPlugin(
+                /\@angular(\\|\/)core(\\|\/)fesm5/,
+                path.resolve(__dirname, 'src'),{}
+            ),
+            new FilterWarningsPlugin({
+                exclude: /System.import/
             })
-
-        ]
+        ],
+        devtool: "source-map",
+        devServer: {
+              historyApiFallback: true
+        }
     };
 }
